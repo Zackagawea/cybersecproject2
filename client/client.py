@@ -13,7 +13,7 @@
 
 """
 
-from Crypto.Cipher import AES
+from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
 import random
 import base64
@@ -39,7 +39,7 @@ def generate_key():
 # Takes an AES session key and encrypts it using the appropriate
 # key and return the value
 def encrypt_handshake(session_key):
-    return serverPublic.encrypt(session_key, 32)
+    return PKCS1_OAEP.new(serverPublic).encrypt(session_key, 32)
 
 
 # Encrypts the message using AES. Same as server function

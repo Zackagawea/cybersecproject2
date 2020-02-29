@@ -12,7 +12,7 @@
 
 
 """
-from Crypto.Cipher import AES
+from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
 import base64
 import os
@@ -20,7 +20,7 @@ import socket
 
 host = "localhost"
 port = 10001
-serverPrivate = RSA.import_key(open("server_key").read())
+serverPrivate = PKCS1_OAEP.import_key(open("server_key").read())
 
 
 # A helper function. It may come in handy when performing symmetric encryption
