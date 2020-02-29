@@ -13,12 +13,14 @@
 
 """
 from Crypto.Cipher import AES
+from Crypto.PublicKey import RSA
 import base64
 import os
 import socket
 
 host = "localhost"
 port = 10001
+serverPrivate = RSA.import_key(open("server_key").read())
 
 
 # A helper function. It may come in handy when performing symmetric encryption
@@ -28,7 +30,7 @@ def pad_message(message):
 
 # Write a function that decrypts a message using the server's private key
 def decrypt_key(session_key):
-
+    return PKCS1_OAEP.new(serverPrivate).decrypt(session_key)
 
 
 # Write a function that decrypts a message using the session key
@@ -66,9 +68,10 @@ def verify_hash(user, password):
             line = line.split("\t")
             if line[0] == user:
                 # TODO: Generate the hashed password
-                # hashed_password =
+                salt = line[1]
+                hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
                 return hashed_password == line[2]
-        reader.close()
+        reader.close()  
     except FileNotFoundError:
         return False
     return False
@@ -104,8 +107,10 @@ def main():
                 ciphertext_message = receive_message(connection)
 
                 # TODO: Decrypt message from client
+                message = decrypt_message(ciphertext_message, plaintext_key)
 
                 # TODO: Split response from user into the username and password
+                print(message)
 
                 # TODO: Encrypt response to client
 

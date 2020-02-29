@@ -14,15 +14,16 @@
 """
 
 from Crypto.Cipher import AES
+from Crypto.PublicKey import RSA
+import random
 import base64
 import socket
 import os
 
 
 host = "localhost"
-port = 10001
-serverPublicKey = "AAAAB3NzaC1yc2EAAAADAQABAAABAQDW8oegC5aqr/0cL+FBWtSKcMnmlfS/DlHVPbrgjZvJuU5BRma8VPAf8AC6AWY7lIrL3ad5We8TfGGODqocv+IGLA/xUeAo0SmA1+nlGAShrEYdft7lasTJIUQVZn5/Kpiqr+6lnUsr0BhRaYlF61usYKgpclw0OII7w8iiCTAkjBdAaJSL7K43MU6XG2coDK0bWdX/+HRt2BMsFzEVvrLXKHEPJynUhL6pTp0K9rtRC8SrC1wrBKxV4jllji7lJan1ueEXgchRpeokZcLtUpgFjAyKig2u8ksYxgyw9ffySCn0OsyIx/fHMAoeyABVROWIM9BTu7sUT0n7qFCv5hhv"
-
+port = 10001    
+serverPublic = RSA.import_key(open("../server/server_key.pub").read())
 
 # A helper function that you may find useful for AES encryption
 # Is this the best way to pad a message?!?!
@@ -38,7 +39,7 @@ def generate_key():
 # Takes an AES session key and encrypts it using the appropriate
 # key and return the value
 def encrypt_handshake(session_key):
-    aes = AES.new(session_key)
+    aes = AES.new(serverPublic, AES.MODE_CBC, ''.join([chr(random.randint(0,0xFF)) for i in range(16)]))
     return aes.encrypt(session_key)
 
 
