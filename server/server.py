@@ -12,7 +12,9 @@
 
 
 """
-
+from Crypto.Cipher import AES
+import base64
+import os
 import socket
 
 host = "localhost"
@@ -26,20 +28,17 @@ def pad_message(message):
 
 # Write a function that decrypts a message using the server's private key
 def decrypt_key(session_key):
-    # TODO: Implement this function
-    pass
+
 
 
 # Write a function that decrypts a message using the session key
 def decrypt_message(client_message, session_key):
-    # TODO: Implement this function
-    pass
+    return session_key.decrypt(client_message)
 
 
 # Encrypt a message using the session key
 def encrypt_message(message, session_key):
-    # TODO: Implement this function
-    pass
+    return session_key.encrypt(message)
 
 
 # Receive 1024 bytes from the client
