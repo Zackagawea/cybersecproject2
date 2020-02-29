@@ -39,13 +39,13 @@ def generate_key():
 # Takes an AES session key and encrypts it using the appropriate
 # key and return the value
 def encrypt_handshake(session_key):
-    aes = AES.new(serverPublic, AES.MODE_CBC, ''.join([chr(random.randint(0,0xFF)) for i in range(16)]))
-    return aes.encrypt(session_key)
+    return serverPublic.encrypt(session_key, 32)
 
 
 # Encrypts the message using AES. Same as server function
 def encrypt_message(message, session_key):
-    return session_key.encrypt(message)
+    aes = AES.new(session_key, AES.MODE_CBC, pad_message(message))
+    return aes.encrypt(message)
 
 
 # Decrypts the message using AES. Same as server function
