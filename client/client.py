@@ -44,13 +44,12 @@ def encrypt_handshake(session_key):
 
 # Encrypts the message using AES. Same as server function
 def encrypt_message(message, session_key):
-    aes = AES.new(session_key, AES.MODE_CBC, pad_message(message))
-    return aes.encrypt(message)
+    return AES.new(session_key).encrypt(pad_message(message))
 
 
 # Decrypts the message using AES. Same as server function
 def decrypt_message(message, session_key):
-    return session_key.decrypt(message)
+    return AES.new(session_key).decrypt(message)
 
 
 # Sends a message over TCP
