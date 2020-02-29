@@ -22,7 +22,7 @@ import os
 
 
 host = "localhost"
-port = 10001    
+port = 10001
 serverPublic = RSA.import_key(open("../server/server_key.pub").read())
 
 # A helper function that you may find useful for AES encryption
@@ -39,7 +39,7 @@ def generate_key():
 # Takes an AES session key and encrypts it using the appropriate
 # key and return the value
 def encrypt_handshake(session_key):
-    return PKCS1_OAEP.new(serverPublic).encrypt(session_key, 32)
+    return PKCS1_OAEP.new(serverPublic).encrypt(session_key)
 
 
 # Encrypts the message using AES. Same as server function

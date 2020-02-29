@@ -20,7 +20,7 @@ import socket
 
 host = "localhost"
 port = 10001
-serverPrivate = PKCS1_OAEP.import_key(open("server_key").read())
+serverPrivate = RSA.import_key(open("server_key").read())
 
 
 # A helper function. It may come in handy when performing symmetric encryption
@@ -71,7 +71,7 @@ def verify_hash(user, password):
                 salt = line[1]
                 hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
                 return hashed_password == line[2]
-        reader.close()  
+        reader.close()
     except FileNotFoundError:
         return False
     return False
