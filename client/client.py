@@ -16,14 +16,13 @@
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
 import random
-import base64
 import socket
 import os
 
 
 host = "localhost"
 port = 10001
-serverPublic = RSA.import_key(open("../server/server_key.pub").read())
+serverPublic = RSA.importKey(open('../server/server_key.pub').read())
 
 # A helper function that you may find useful for AES encryption
 # Is this the best way to pad a message?!?!
@@ -44,12 +43,12 @@ def encrypt_handshake(session_key):
 
 # Encrypts the message using AES. Same as server function
 def encrypt_message(message, session_key):
-    return AES.new(session_key).encrypt(pad_message(message))
+    return AES.new(session_key, AES.MODE_ECB).encrypt(message.encode())
 
 
 # Decrypts the message using AES. Same as server function
 def decrypt_message(message, session_key):
-    return AES.new(session_key).decrypt(message)
+    return AES.new(session_key, AES.MODE_ECB).decrypt(message)
 
 
 # Sends a message over TCP
@@ -94,11 +93,11 @@ def main():
             exit(0)
 
         # TODO: Encrypt message and send to server
-        encryptedMessage = encrypt_message(message, encrypted_key)
+        encryptedMessage = encrypt_message(pad_message(message), key)
         send_message(sock, encryptedMessage)
 
         a = receive_message(sock)
-        response = decrypt_message(a, encrypted_key)
+        response = decrypt_message(a, key).decode()
         print(response)
     finally:
         print('closing socket')

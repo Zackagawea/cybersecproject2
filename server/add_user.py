@@ -25,6 +25,7 @@ try:
 except FileNotFoundError:
     pass
 
+# save as hex values. Python does not like converting from a raw bytes string back to bytes.
 with open("passfile.txt", 'a+') as writer:
-    writer.write("{0}\t{1}\t{2}\n".format(user, salt, hashed_password))
+    writer.write("{0}\t{1}\t{2}\n".format(user, salt.hex(), hashed_password.hex()))
     print("User successfully added!")

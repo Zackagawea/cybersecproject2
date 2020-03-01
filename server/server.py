@@ -14,13 +14,15 @@
 """
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
+import hashlib
 import base64
 import os
 import socket
+import binascii
 
-host = "localhost"
+host = "localhost"  
 port = 10001
-serverPrivate = RSA.import_key(open("server_key").read())
+serverPrivate = RSA.import_key(open('server_key').read())
 
 
 # A helper function. It may come in handy when performing symmetric encryption
@@ -35,12 +37,12 @@ def decrypt_key(session_key):
 
 # Write a function that decrypts a message using the session key
 def decrypt_message(client_message, session_key):
-    return session_key.decrypt(client_message)
+    return AES.new(session_key, AES.MODE_ECB).decrypt(client_message)
 
 
 # Encrypt a message using the session key
 def encrypt_message(message, session_key):
-    return session_key.encrypt(message)
+    return AES.new(session_key, AES.MODE_ECB).encrypt(message.encode("utf-8"))
 
 
 # Receive 1024 bytes from the client
@@ -68,8 +70,8 @@ def verify_hash(user, password):
             line = line.split("\t")
             if line[0] == user:
                 # TODO: Generate the hashed password
-                salt = line[1]
-                hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
+                salt = bytes.fromhex(line[1])
+                hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000).hex()
                 return hashed_password == line[2]
         reader.close()
     except FileNotFoundError:
@@ -106,16 +108,14 @@ def main():
                 # Receive encrypted message from client
                 ciphertext_message = receive_message(connection)
 
-                # TODO: Decrypt message from client
-                message = decrypt_message(ciphertext_message, plaintext_key)
+                message = decrypt_message(ciphertext_message, plaintext_key).decode()
 
-                # TODO: Split response from user into the username and password
                 print(message)
-
-                # TODO: Encrypt response to client
-
-                # Send encrypted response
-                send_message(connection, ciphertext_response)
+                splitMessage = message.split(' ')
+                if (verify_hash(splitMessage[0], splitMessage[1])):
+                    send_message(connection, encrypt_message(pad_message("Success!"), plaintext_key))
+                else:
+                    send_message(connection, encrypt_message(pad_message("Incorrect user/pass"), plaintext_key))
             finally:
                 # Clean up the connection
                 connection.close()
